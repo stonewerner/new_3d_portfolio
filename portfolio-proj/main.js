@@ -36,8 +36,37 @@ const lightHelper = new THREE.PointLightHelper(pointLight);
 const gridHelper = new THREE.GridHelper(200, 50);
 scene.add(lightHelper, gridHelper);
 
-
 const controls = new OrbitControls(camera, renderer.domElement);
+
+function addStar() {
+  const geometry = new THREE.SphereGeometry(0.25, 24, 24);
+  const material = new THREE.MeshStandardMaterial({color: 0xFFFFFF});
+  const star= new THREE.Mesh(geometry, material);
+
+  const [x, y, z] = Array(3).fill().map(() => THREE.MathUtils.randFloatSpread(100));
+
+  star.position.set(x,y,z);
+  scene.add(star);
+}
+
+//populate space with 200 stars
+Array(200).fill().forEach(addStar);
+
+const oceanTexture = new THREE.TextureLoader().load('ocean.jpg');
+scene.background = oceanTexture;
+
+//avatar cube
+const proStoneTexture = new THREE.TextureLoader().load('pro_profile_pic.jpg');
+
+const proStone = new THREE.Mesh(
+  new THREE.BoxGeometry(3, 3, 3),
+  new THREE.MeshBasicMaterial({map: proStoneTexture})
+);
+scene.add(proStone);
+
+
+
+
 function animate() {
   requestAnimationFrame(animate);
 
@@ -51,3 +80,16 @@ function animate() {
 }
 
 animate();
+
+function moveCamera() {
+  const t = document.body.getBoundingClientRect().top;
+  proStone.rotation.y += 0.01;
+  proStone.rotation.z += 0.01;
+
+  camera.position.z = t * -0.01;
+  camera.position.x = t * -0.002;
+  camera.position.y = t * -0.002;
+
+}
+
+document.body.onscroll = moveCamera;
